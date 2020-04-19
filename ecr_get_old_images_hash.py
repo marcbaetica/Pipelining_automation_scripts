@@ -28,7 +28,7 @@ def getShaListOfOldImages(list, amountToRetain):
 	print(f'\nThe total amount of SHAs before selection is {len(totalShaList)}. Skipping the first {amountToRetain}.');
 	return [totalShaList[x].split(':')[1] for x in range(5, len(totalShaList))];
 
-def getLitOfOldImagesSha(imagesList):
+def getListOfOldImagesSha(imagesList):
 	print('\nSHAs of docker images to account for:')
 	pp.pprint(imagesList);
 
@@ -43,4 +43,4 @@ pp.pprint(sortedImagesDescriptions);
 #from the images list description get SHAs of old images (ignoring the first 5)
 filteredLimages = getShaListOfOldImages(sortedImagesDescriptions, 5);
 
-getLitOfOldImagesSha(filteredLimages);
+getListOfOldImagesSha(filteredLimages);
