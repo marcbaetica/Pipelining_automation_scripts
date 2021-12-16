@@ -1,7 +1,6 @@
 import boto3
 import json
-from pprintpp import pprint
-from ec2.encoders.datetime_encoder import DatetimeEncoder
+from ec2.python_boto3.encoders.datetime_encoder import DatetimeEncoder
 
 
 def get_ec2s_descriptions():
