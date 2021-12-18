@@ -1,6 +1,7 @@
 .idea
 descriptions.json
 *.pem
+*.ppk
 *.tfstate*
 *.exe
 *.hcl
