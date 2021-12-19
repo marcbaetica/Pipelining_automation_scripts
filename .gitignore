@@ -5,3 +5,4 @@ descriptions.json
 *.tfstate*
 *.exe
 *.hcl
+temp/*
