@@ -48,31 +48,31 @@ resource "aws_instance" "my_ubuntu_machine" {
   vpc_security_group_ids = [aws_security_group.marcb_access.id]
 }
 
-// Separate from ec2 provisioning step to allow run on future ec2s.
-//resource "null_resource" "enable_rdp" {
-//  connection {
-//    type        = "ssh"
-//    user        = "ubuntu"
-//    host        = aws_instance.my_ubuntu_machine.public_ip
-//    private_key = file("Automation-Ohio.pem")  // TODO: Put inside var.
-//  }
-//
-//  provisioner "file" {
-//    source = "utils/enable_vnc.sh"
-//    destination = "/home/ubuntu/enable_vnc.sh"  // TODO: Put inside var.
-//  }
-//
-//  provisioner "remote-exec" {
-//    inline = [
-//      // "lsb_release -a",  // Logging OS version for debugging purposes.
-//      "sed -i -e 's/\r$//' /home/ubuntu/enable_vnc.sh",
-//      "sudo chmod 777 /home/ubuntu/enable_vnc.sh",  // TODO: Put inside var.
-//      "sudo /home/ubuntu/enable_vnc.sh",  // TODO: Put inside var.
-//    ]
-//  }
-//
-//  depends_on = [aws_instance.my_ubuntu_machine]
-//}
+// Separate from ec2 provisioning step to allow step to run on future ec2s.
+resource "null_resource" "enable_rdp" {
+  connection {
+    type        = "ssh"
+    user        = "ubuntu"
+    host        = aws_instance.my_ubuntu_machine.public_ip
+    private_key = file("Automation-Ohio.pem")  // TODO: Put inside var.
+  }
+
+  provisioner "file" {
+    source = "utils/enable_rdp.sh"
+    destination = "/home/ubuntu/enable_rdp.sh"  // TODO: Put inside var.
+  }
+
+  provisioner "remote-exec" {
+    inline = [
+      // "lsb_release -a",  // Logging OS version for debugging purposes.
+      "sed -i -e 's/\r$//' /home/ubuntu/enable_rdp.sh",  # Line endings conversion (if copied from Win FS).
+      "sudo chmod 777 /home/ubuntu/enable_rdp.sh",  // TODO: Put inside var.
+      "sudo /home/ubuntu/enable_rdp.sh",  // TODO: Put inside var.
+    ]
+  }
+
+  depends_on = [aws_instance.my_ubuntu_machine]
+}
 
 output "your_ip" {
   value = data.external.my_ip_address.result.ip
