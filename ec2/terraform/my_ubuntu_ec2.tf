@@ -69,7 +69,7 @@ resource "null_resource" "enable_rdp" {
       "sed -i -e 's/\r$//' /home/ubuntu/enable_rdp.sh",  # Line endings conversion (if copied from Win FS).
       "sudo chmod 777 /home/ubuntu/enable_rdp.sh",  // TODO: Put inside var.
       "sudo /home/ubuntu/enable_rdp.sh",  // TODO: Put inside var.
-      "echo -e 'aaa\naaa' | sudo passwd ubuntu"  // TODO: Put inside var and output at the end.
+      "echo 'aaa\\naaa' | sudo passwd ubuntu"  // XRDP looks for a user password during login. TODO: Put inside var and output at the end.
     ]
   }
 
