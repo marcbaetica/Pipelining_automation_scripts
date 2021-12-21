@@ -39,7 +39,8 @@ resource "aws_security_group" "marcb_access" {
 resource "aws_instance" "my_ubuntu_machine" {
   key_name      = "Automation-Ohio"
   ami           = "ami-0fb653ca2d3203ac1"
-  instance_type = "t2.micro"
+   instance_type = "t2.micro"
+//  instance_type = "m5.xlarge"
 
   tags = {
     Name = "ubuntu"
@@ -68,6 +69,7 @@ resource "null_resource" "enable_rdp" {
       "sed -i -e 's/\r$//' /home/ubuntu/enable_rdp.sh",  # Line endings conversion (if copied from Win FS).
       "sudo chmod 777 /home/ubuntu/enable_rdp.sh",  // TODO: Put inside var.
       "sudo /home/ubuntu/enable_rdp.sh",  // TODO: Put inside var.
+      "echo -e 'aaa\naaa' | sudo passwd ubuntu"  // TODO: Put inside var and output at the end.
     ]
   }
 
