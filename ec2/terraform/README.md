@@ -1,7 +1,7 @@
 ## IoC for deployment of ec2 with ssh and rdp connection execution
 
 
-###Workbook:
+### Workbook:
 ~~~
 # Destroys env if exists and creates a new one.
 python execute_tf_commands.py
@@ -13,6 +13,6 @@ python execute_tf_commands.py rpd
 ~~~
 
 
-####Prerequisites:
+### Prerequisites:
 - place your pem key in the external directory.
 - fill dev.tfvars with appropriate definitions pertaining to your AWS environment and configuration.
