@@ -5,7 +5,7 @@ provider "aws" {
 
 data "external" "my_ip_address" {
   program = ["python", "retrieve_public_ip_address.py"]
-  working_dir = "utils"
+  working_dir = var.external_directory
 }
 
 resource "aws_security_group" "marcb_access" {
@@ -37,7 +37,7 @@ resource "aws_security_group" "marcb_access" {
 }
 
 resource "aws_instance" "my_ubuntu_machine" {
-  key_name      = "Automation-Ohio"
+  key_name      = var.aws_key_pair
   ami           = "ami-0fb653ca2d3203ac1"
   instance_type = var.ec2_instance_type
 
@@ -54,21 +54,21 @@ resource "null_resource" "enable_rdp" {
     type        = "ssh"
     user        = "ubuntu"
     host        = aws_instance.my_ubuntu_machine.public_ip
-    private_key = file("Automation-Ohio.pem")  // TODO: Put inside var.
+    private_key = file("${var.external_directory}/${var.pem_key_file_name}")  // TODO: Put inside var.
   }
 
   provisioner "file" {
-    source = "utils/enable_rdp.sh"
+    source = "${var.external_directory}/enable_rdp.sh"
     destination = "/home/ubuntu/enable_rdp.sh"  // TODO: Put inside var.
   }
 
   provisioner "remote-exec" {
     inline = [
       // "lsb_release -a",  // Logging OS version for debugging purposes.
-      "sed -i -e 's/\r$//' /home/ubuntu/enable_rdp.sh",  # Line endings conversion (if copied from Win FS).
-      "sudo chmod 777 /home/ubuntu/enable_rdp.sh",  // TODO: Put inside var.
-      "sudo /home/ubuntu/enable_rdp.sh",  // TODO: Put inside var.
-      "echo 'aaa\\naaa' | sudo passwd ubuntu"  // XRDP looks for a user password during login. TODO: Put inside var and output at the end.
+//      "sed -i -e 's/\r$//' /home/ubuntu/enable_rdp.sh",  # Line endings conversion (if copied from Win FS).
+//      "sudo chmod 777 /home/ubuntu/enable_rdp.sh",  // TODO: Put inside var.
+//      "sudo /home/ubuntu/enable_rdp.sh",  // TODO: Put inside var.
+      "echo '${var.rdp_password}\\n${var.rdp_password}' | sudo passwd ubuntu"  // XRDP looks for a user password during login. TODO: Put inside var and output at the end.
     ]
   }
 
@@ -85,4 +85,12 @@ output "security_group" {
 
 output "ec2_public_ip" {
   value = aws_instance.my_ubuntu_machine.public_ip
+}
+
+output "ec2_username" {
+  value = aws_instance.my_ubuntu_machine.user_data
+}
+
+output "ec2_rdp_password" {
+  value = var.rdp_password
 }

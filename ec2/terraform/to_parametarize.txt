@@ -3,9 +3,10 @@ TODOs:
 - security_group_name
 - vpc_security_group_ids
 - ec2_instance_type  -> OK
-- pem_key_name
+- pem_key_name  -> OK
+- pem_key_location  -> OK
 - ec2_username (maybe just for output)
-- ec2_rdp_password
+- ec2_rdp_password  -> OK
 
 For testing:
 terraform plan --var-file="dev.tfvars"
