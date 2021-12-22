@@ -1,8 +1,11 @@
 TODOs:
-- ec2_rdp_password
-- ec2_instance_type
+- aws_region  -> OK
 - security_group_name
-- aws_region
 - vpc_security_group_ids
+- ec2_instance_type  -> OK
 - pem_key_name
 - ec2_username (maybe just for output)
+- ec2_rdp_password
+
+For testing:
+terraform plan --var-file="dev.tfvars"
