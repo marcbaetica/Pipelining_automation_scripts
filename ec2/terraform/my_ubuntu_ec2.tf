@@ -65,9 +65,9 @@ resource "null_resource" "enable_rdp" {
   provisioner "remote-exec" {
     inline = [
       // "lsb_release -a",  // Logging OS version for debugging purposes.
-//      "sed -i -e 's/\r$//' /home/ubuntu/enable_rdp.sh",  # Line endings conversion (if copied from Win FS).
-//      "sudo chmod 777 /home/ubuntu/enable_rdp.sh",  // TODO: Put inside var.
-//      "sudo /home/ubuntu/enable_rdp.sh",  // TODO: Put inside var.
+      "sed -i -e 's/\r$//' /home/ubuntu/enable_rdp.sh",  # Line endings conversion (if copied from Win FS).
+      "sudo chmod 777 /home/ubuntu/enable_rdp.sh",  // TODO: Put inside var.
+      "sudo /home/ubuntu/enable_rdp.sh",  // TODO: Put inside var.
       "echo '${var.rdp_password}\\n${var.rdp_password}' | sudo passwd ubuntu"  // XRDP looks for a user password during login. TODO: Put inside var and output at the end.
     ]
   }
