@@ -52,23 +52,23 @@ resource "aws_instance" "my_ubuntu_machine" {
 resource "null_resource" "enable_rdp" {
   connection {
     type        = "ssh"
-    user        = "ubuntu"
+    user        = var.ec2_username.ubuntu
     host        = aws_instance.my_ubuntu_machine.public_ip
     private_key = file("${var.external_directory}/${var.pem_key_file_name}")  // TODO: Put inside var.
   }
 
   provisioner "file" {
     source = "${var.external_directory}/enable_rdp.sh"
-    destination = "/home/ubuntu/enable_rdp.sh"  // TODO: Put inside var.
+    destination = "/home/${var.ec2_username.ubuntu}/enable_rdp.sh"  // TODO: Put inside var.
   }
 
   provisioner "remote-exec" {
     inline = [
       // "lsb_release -a",  // Logging OS version for debugging purposes.
-      "sed -i -e 's/\r$//' /home/ubuntu/enable_rdp.sh",  # Line endings conversion (if copied from Win FS).
-      "sudo chmod 777 /home/ubuntu/enable_rdp.sh",  // TODO: Put inside var.
-      "sudo /home/ubuntu/enable_rdp.sh",  // TODO: Put inside var.
-      "echo '${var.rdp_password}\\n${var.rdp_password}' | sudo passwd ubuntu"  // XRDP looks for a user password during login. TODO: Put inside var and output at the end.
+      "sed -i -e 's/\r$//' /home/${var.ec2_username.ubuntu}/enable_rdp.sh",  # Line endings conversion (if copied from Win FS).
+      "sudo chmod 777 /home/${var.ec2_username.ubuntu}/enable_rdp.sh",  // TODO: Put inside var.
+      "sudo /home/${var.ec2_username.ubuntu}/enable_rdp.sh",  // TODO: Put inside var.
+      "echo '${var.rdp_password}\\n${var.rdp_password}' | sudo passwd ${var.ec2_username.ubuntu}"  // XRDP looks for a user password during login.
     ]
   }
 
@@ -88,9 +88,13 @@ output "ec2_public_ip" {
 }
 
 output "ec2_username" {
-  value = aws_instance.my_ubuntu_machine.user_data
+  value = var.ec2_username.ubuntu
 }
 
 output "ec2_rdp_password" {
   value = var.rdp_password
+}
+
+output "external_directory" {
+  value = var.external_directory
 }

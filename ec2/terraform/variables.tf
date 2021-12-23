@@ -1,3 +1,8 @@
+variable "external_directory" {
+  type = string
+  default = "external"
+}
+
 variable "aws_region" {
   type = string
   default = "us-east-2"
@@ -7,9 +12,12 @@ variable "ec2_instance_type" {
   type = string
 }
 
-variable "external_directory" {
-  type = string
-  default = "external"
+variable "ec2_username" {
+  type = map(string)
+  default = {
+    ubuntu = "ubuntu"
+    // Allowing for expansion.
+  }
 }
 
 variable "aws_key_pair" {

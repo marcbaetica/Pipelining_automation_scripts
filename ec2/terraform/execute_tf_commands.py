@@ -1,7 +1,6 @@
 import os
 import subprocess
 import sys
-from pprintpp import pprint
 from time import sleep
 
 
@@ -20,23 +19,22 @@ def open_ssh_connection_to_ec2():
     pem_key_location = get_pem_key_location()
     print('Waiting for a few seconds to allow SSH service to start.')  # In case EC2 was just created.
     sleep(10)
-    ec2_ip = subprocess.check_output('terraform output -json ec2_public_ip').decode('utf-8').replace('"', '').rstrip()
-    # TODO: Get username from either whoami or put in output and extract it from there.
-    command = f'ssh -i "{pem_key_location}" -o StrictHostKeyChecking=no ubuntu@{ec2_ip}'
+    ec2_ip = get_value_from_output('ec2_public_ip')
+    ec2_user = get_value_from_output('ec2_username')
+    command = f'ssh -i "{pem_key_location}" -o StrictHostKeyChecking=no {ec2_user}@{ec2_ip}'
     print(f'Opening SSH connection terminal to host {ec2_ip}.')
     os.system(f'start /wait cmd /c {command}')
     print(f'SSH connection closed.')
 
 
-def get_pem_key_location():  # TODO: Get external_directory from var and delete definition under tfvars file.
+def get_pem_key_location():
+    external_directory = get_value_from_output('external_directory')
     with open('dev.tfvars', 'r') as f:
-        data = [line.rstrip() for line in f.readlines()]
-    if not any('external_directory' in line for line in data) or not any('pem_key_file_name' in line for line in data):
+        key_file = next(iter([line.rstrip().split('"')[1] for line in f.readlines() if 'pem_key_file_name' in line]), None)
+    if not external_directory or not key_file:
         print(f'Missing external_directory or pem_key_file_name definitions within your tfvars file.'
               f' Check that variables are defined correctly before re-running. Exiting.')
         sys.exit(1)
-    external_directory = [line.split('"')[1] for line in data if 'external_directory' in line][0]
-    key_file = [line.split('"')[1] for line in data if 'pem_key_file_name' in line][0]
     if key_file not in os.listdir(external_directory):
         print(f'No key was found under {external_directory}/{key_file} as per your tfvars file definitions.'
               f' Check the existence of the file before re-running. Exiting.')
@@ -45,11 +43,15 @@ def get_pem_key_location():  # TODO: Get external_directory from var and delete 
 
 
 def open_rdp_connection_to_ec2():
-    ec2_ip = subprocess.check_output('terraform output ec2_public_ip').decode('utf-8').replace('"', '').rstrip()
+    ec2_ip = get_value_from_output('ec2_public_ip')
     command = f'mstsc /v:{ec2_ip}'
     print(f'\nOpening RDP connection window to host {ec2_ip}.')
     os.system(f'start /wait cmd /c {command}')
     print(f'RDP connection closed.')
+
+
+def get_value_from_output(output_param):
+    return subprocess.check_output(f'terraform output {output_param}').decode('utf-8').replace('"', '').rstrip()
 
 
 if __name__ == '__main__':
@@ -63,4 +65,4 @@ if __name__ == '__main__':
         elif connection == 'rdp':
             open_rdp_connection_to_ec2()
         else:
-            print(f'Parameter "{connection}" is not accepted. Acceptable inputs are "ssh" or "rdp".')
+            print(f'Parameter "{connection}" is not a valid entry. Acceptable inputs are "ssh" or "rdp".')
