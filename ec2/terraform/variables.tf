@@ -8,6 +8,10 @@ variable "aws_region" {
   default = "us-east-2"
 }
 
+variable "aws_security_group_name" {
+  type = string
+}
+
 variable "ec2_instance_type" {
   type = string
 }

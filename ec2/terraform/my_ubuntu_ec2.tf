@@ -8,8 +8,8 @@ data "external" "my_ip_address" {
   working_dir = var.external_directory
 }
 
-resource "aws_security_group" "marcb_access" {
-  name        = "marcb-access"
+resource "aws_security_group" "ubuntu_security_group" {
+  name        = var.aws_security_group_name
   description = "Allow SSH, RDP traffic from personal pc."
 
   ingress {
@@ -45,7 +45,7 @@ resource "aws_instance" "my_ubuntu_machine" {
     Name = "ubuntu"
   }
 
-  vpc_security_group_ids = [aws_security_group.marcb_access.id]
+  vpc_security_group_ids = [aws_security_group.ubuntu_security_group.id]
 }
 
 // Separate from ec2 provisioning step to allow step to run on future ec2s.
@@ -80,7 +80,7 @@ output "your_ip" {
 }
 
 output "security_group" {
-  value = [aws_security_group.marcb_access.name, aws_security_group.marcb_access.id]
+  value = [aws_security_group.ubuntu_security_group.name, aws_security_group.ubuntu_security_group.id]
 }
 
 output "ec2_public_ip" {
