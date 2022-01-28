@@ -1,0 +1,11 @@
+node {
+    stage('Terraform Deployment') {
+        try {
+            sh 'exit 1'
+        }
+        catch (exc) {
+            echo 'EC2 deployment failed!'
+            throw
+        }
+    }
+}
