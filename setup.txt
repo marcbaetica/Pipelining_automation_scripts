@@ -1,0 +1,3 @@
+# Set Build Token in: your_job -> Configure -> Trigger builds remotely (e.g., from scripts) -> Set your token value.
+# Get your username: Click on the name in the upper right corner.
+# Configure API Token: https://jenkins_server/user/your_user/configure -> API Token -> Set your API token value.
